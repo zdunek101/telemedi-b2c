@@ -1,0 +1,34 @@
+# Publikuje statyczne narzędzie z folderu tool/ na GitHub Pages.
+# Dane (tool/data/*.json) są budowane lokalnie skryptem scripts/build_tool_data.py,
+# bo surowe CSV nie trafiają do repozytorium. Workflow tylko publikuje gotowy folder.
+name: Pages
+
+on:
+  push:
+    branches: [main]
+    paths: ["tool/**", ".github/workflows/pages.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: tool
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Telemedi B2C — narzędzie</title>
+  <link rel="stylesheet" href="style.css?v=3">
+  <!-- wersje przypięte -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Telemedi B2C, X 2024 – IX 2026</h1>
+    <p class="sub">Kohorty, lejek, CAC i priorytety. Dane wygenerowane na potrzeby zadania; wyłącznie agregaty. <span id="built"></span></p>
+    <nav id="tabs">
+      <button data-tab="wzrost">Czy wzrost jest prawdziwy</button>
+      <button data-tab="kohorty">Kohorty</button>
+      <button data-tab="lejek">Lejek</button>
+      <button data-tab="cac">CAC i zwrot</button>
+      <button data-tab="priorytety">Priorytety</button>
+      <button data-tab="niewiadome">Niewiadome</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- WZROST -->
+  <section id="tab-wzrost" class="tab">
+    <div id="answer" class="answer"></div>
+    <h2>Od dashboardu do liczb realnych</h2>
+    <p class="note">Okresy: <b>P1</b> = X 2024 – IX 2025, <b>P2</b> = X 2025 – IX 2026, czas polski. Kroki kumulują się; krok „w tym” to podzbiór, nie korekta danych.</p>
+    <div id="most-cards" class="cards"></div>
+    <div class="grid3">
+      <div class="panel"><h3>Zamówienia: wzrost P2 / P1</h3><div class="chartbox small"><canvas id="most-chart-0"></canvas></div></div>
+      <div class="panel"><h3>Przychód z konsultacji: wzrost P2 / P1</h3><div class="chartbox small"><canvas id="most-chart-1"></canvas></div></div>
+      <div class="panel"><h3>Nowi pacjenci: wzrost P2 / P1</h3><div class="chartbox small"><canvas id="most-chart-2"></canvas></div></div>
+    </div>
+    <div class="panel"><h3>Co dalej obniża realny wzrost</h3><ul id="most-facts" class="facts"></ul></div>
+    <div id="most-tables"></div>
+  </section>
+
+  <!-- KOHORTY -->
+  <section id="tab-kohorty" class="tab">
+    <h2>Kohorty dzienne</h2>
+    <p class="note">Kohorta = dzień pierwszego nieanulowanego zamówienia. Powrót = kolejne nieanulowane zamówienie w oknie. Marża = przychód netto + opłaty GO − koszt lekarza, bez kosztu pozyskania. Linia tylko dla dni z pełnym oknem. Źródło = ostatnia sesja niebezpośrednia przed pierwszym zakupem.</p>
+    <div class="controls">
+      <label>Grupa <select id="c-grp"></select></label>
+      <label>Źródło <select id="c-src"></select></label>
+      <label>Metryka <select id="c-metric">
+        <option value="r90">Powrót 90 dni</option>
+        <option value="r30">Powrót 30 dni</option>
+        <option value="r180">Powrót 180 dni</option>
+        <option value="marza90">Marża 90 dni na pacjenta</option>
+        <option value="marza180">Marża 180 dni na pacjenta</option>
+      </select></label>
+      <label>Wygładzanie <select id="c-smooth">
+        <option value="1">dzień</option>
+        <option value="7">7 dni</option>
+        <option value="28" selected>28 dni</option>
+      </select></label>
+      <label class="chk"><input type="checkbox" id="c-cal" checked> kampanie i kody</label>
+      <label class="chk"><input type="checkbox" id="c-ev" checked> wykryte zdarzenia</label>
+    </div>
+    <div class="panel"><div class="chartbox"><canvas id="c-chart"></canvas></div></div>
+    <div class="grid2">
+      <div class="panel"><h3>Miesięcznie</h3><div id="c-month"></div></div>
+      <div class="panel"><h3>Znaczniki na wykresie</h3><div id="c-events"></div></div>
+    </div>
+  </section>
+
+  <!-- LEJEK -->
+  <section id="tab-lejek" class="tab">
+    <h2>Lejek: od kiedy i porównanie dwóch okresów</h2>
+    <p class="note">Mianownik = wszystkie sesje. Kroki w ścisłej kolejności: usługa → termin → konto (account_completed albo zalogowany) → start płatności → płatność. Źródło = źródło sesji.</p>
+    <h3>Dziennie</h3>
+    <div class="controls">
+      <label>Segment <select id="fd-seg"></select></label>
+      <label>Krok <select id="fd-step"></select></label>
+      <label>Wygładzanie <select id="fd-smooth"><option value="1">dzień</option><option value="7">7 dni</option><option value="28" selected>28 dni</option></select></label>
+      <label class="chk"><input type="checkbox" id="fd-ev" checked> zdarzenia i kalendarz</label>
+    </div>
+    <div class="panel"><div class="chartbox"><canvas id="fd-chart"></canvas></div><p class="small">Tło: okna A (jasne) i B (ciemniejsze) z porównania poniżej. Znaczniki: K = kalendarz kampanii i kodów, Z = wykryte zdarzenia w lejku.</p></div>
+    <h3>Porównanie okresów A i B</h3>
+    <div class="controls">
+      <label>Gotowe <select id="f-preset">
+        <option value="p">P1 vs P2</option>
+        <option value="safari">28 dni przed / po 17.03.2026</option>
+        <option value="l4">28 dni przed / po 03.11.2025</option>
+        <option value="custom">własne</option>
+      </select></label>
+      <label>A od <input type="date" id="f-a1"></label><label>do <input type="date" id="f-a2"></label>
+      <label>B od <input type="date" id="f-b1"></label><label>do <input type="date" id="f-b2"></label>
+      <label>Podział <select id="f-split">
+        <option value="wszystko">wszystko</option>
+        <option value="urządzenie">urządzenie</option>
+        <option value="źródło">źródło</option>
+        <option value="przeglądarka">przeglądarka</option>
+      </select></label>
+    </div>
+    <div class="panel"><div class="chartbox"><canvas id="f-chart"></canvas></div></div>
+    <div id="f-tables"></div>
+  </section>
+
+  <!-- CAC -->
+  <section id="tab-cac" class="tab">
+    <h2>CAC i zwrot na kanał i kampanię (P2)</h2>
+    <p class="note">CAC = koszt / nowi pacjenci. Koszt = wydatki za klik + afiliacja 25 zł za każde pierwsze zamówienie (także anulowane). Przypisanie: ostatnia sesja niebezpośrednia; zakres = pierwsza sesja / sesja płatności. Koszt i marża z tych samych miesięcy kohort z pełnym oknem. CAC wynika z przypisania, nie z przyrostu.</p>
+    <div class="controls">
+      <label>Okno marży <select id="k-okno"><option value="180">180 dni (kohorty X 2025 – 3.04.2026)</option><option value="90">90 dni (kohorty X 2025 – 2.07.2026)</option></select></label>
+    </div>
+    <div id="k-groups" class="cards"></div>
+    <div class="panel"><div class="chartbox"><canvas id="k-chart"></canvas></div></div>
+    <div id="k-table"></div>
+  </section>
+
+  <section id="tab-priorytety" class="tab"><div id="prio" class="md"></div></section>
+  <section id="tab-niewiadome" class="tab"><div id="unk" class="md"></div></section>
+
+  <footer>
+    <details><summary>Definicje i założenia (docs/decisions.md)</summary><div id="defs" class="md"></div></details>
+    <p>Ślad pracy (SQL, decyzje, analizy): repozytorium projektu, foldery <code>sql/</code> i <code>docs/</code>.</p>
+  </footer>
+</main>
+<script src="app.js?v=6"></script>
+</body>
+</html>

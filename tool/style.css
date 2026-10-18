@@ -1,0 +1,54 @@
+:root {
+  --bg: #f6f7f9; --panel: #ffffff; --ink: #1d2430; --muted: #5d6675; --line: #dde1e7;
+  --accent: #1f6feb; --good: #1a7f37; --bad: #c62828; --warn: #b26a00;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font: 14px/1.5 -apple-system, "Segoe UI", Roboto, Arial, sans-serif; color: var(--ink); background: var(--bg); }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+header { background: var(--panel); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 5; }
+header h1 { font-size: 20px; margin: 14px 0 2px; }
+.sub { margin: 0 0 10px; color: var(--muted); font-size: 13px; }
+nav { display: flex; flex-wrap: wrap; gap: 4px; padding-bottom: 8px; }
+nav button { border: 1px solid var(--line); background: #fff; padding: 6px 12px; border-radius: 6px; cursor: pointer; font: inherit; color: var(--ink); }
+nav button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+h2 { font-size: 18px; margin: 20px 0 6px; }
+h3 { font-size: 14px; margin: 0 0 8px; }
+.note { color: var(--muted); margin: 0 0 12px; max-width: 900px; }
+.tab { display: none; }
+.tab.active { display: block; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px; margin-bottom: 12px; overflow-x: auto; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 860px) { .grid2 { grid-template-columns: 1fr; } }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 12px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
+.card .k { color: var(--muted); font-size: 12px; }
+.card .v { font-size: 22px; font-weight: 600; }
+.card .d { font-size: 12px; color: var(--muted); }
+.controls { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; margin-bottom: 10px; }
+.controls label { display: flex; gap: 6px; align-items: center; color: var(--muted); }
+.controls select, .controls input { font: inherit; padding: 4px 6px; border: 1px solid var(--line); border-radius: 5px; background: #fff; color: var(--ink); }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; white-space: normal; }
+th { color: var(--muted); font-weight: 600; background: #fafbfc; position: sticky; top: 0; }
+td.pos { color: var(--good); } td.neg { color: var(--bad); }
+tr.hl td { background: #fff7e0; }
+.facts { margin: 0; padding-left: 18px; } .facts li { margin-bottom: 6px; }
+.small { font-size: 12px; color: var(--muted); }
+.md table { margin: 8px 0 16px; } .md td, .md th { white-space: normal; text-align: left; vertical-align: top; }
+.md { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 4px 16px 12px; margin-top: 16px; }
+.md blockquote { border-left: 3px solid var(--warn); margin: 8px 0; padding: 4px 12px; color: var(--muted); background: #fffaf0; }
+footer { margin: 24px 0 40px; color: var(--muted); }
+footer details { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; }
+footer .md { border: 0; padding: 0; }
+.evlist { max-height: 360px; overflow-y: auto; }
+.evlist td { white-space: normal; text-align: left; }
+.tag { display: inline-block; padding: 0 6px; border-radius: 4px; font-size: 11px; background: #eef2f7; color: var(--muted); }
+.chartbox { position: relative; height: 360px; min-width: 300px; }
+@media (max-width: 600px) { .chartbox { height: 300px; } }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+@media (max-width: 960px) { .grid3 { grid-template-columns: 1fr; } }
+.chartbox.small { height: 260px; }
+.answer { background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--warn); border-radius: 8px; padding: 12px 16px; margin: 16px 0 4px; font-size: 15px; }
+.answer b.lead { font-size: 17px; }
+.card .lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; }
