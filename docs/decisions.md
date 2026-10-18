@@ -49,7 +49,8 @@ Do rozstrzygnięcia przy okazji:
 4. `payment_started`,
 5. `payment_succeeded`.
 
-Zakup samego GO (bez `service_selected`) nie wchodzi do lejka konsultacji. Kontrola: sesje, które przeszły wszystkie 5 kroków = 63 207 = liczba zamówień w bazie A8 + A11 (`sql/11_daily_series.sql`).
+Zakup samego GO (bez `service_selected`) nie wchodzi do lejka konsultacji.
+W danych każda sesja z płatnością ma `account_completed`, także u osób z istniejącym kontem. Warunek „albo `user_id`” dodaje tylko 112 sesji z terminem, a żadna z nich nie płaci (`sql/14_funnel_drilldown.sql`, D6). Kontrola: sesje, które przeszły wszystkie 5 kroków = 63 207 = liczba zamówień w bazie A8 + A11 (`sql/11_daily_series.sql`).
 
 Rozważane warianty:
 
