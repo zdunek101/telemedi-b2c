@@ -1,24 +1,21 @@
 -- Audyt: wpływ każdej hipotezy na KPI w pp, liczony OSOBNO (bez kumulacji) względem bazy:
--- zamówienia i przychód po deduplikacji (A8), nowi pacjenci i GO jak w dashboardzie.
+-- zamówienia i przychód po deduplikacji (A8), wszystkie KPI bez kont testowych (A11); nowi pacjenci wg definicji dashboardu (Q1).
 -- Wymaga: 00_raw_views.sql, 03_audit_base.sql, 06_audit_h4.sql (tabela attribution). Niczego nie usuwa.
 
--- konta testowe (H1): wszystkie konta, które choć raz użyły kodu TEST-QA
-CREATE OR REPLACE TABLE test_users AS SELECT DISTINCT user_id FROM o WHERE promo_code = 'TEST-QA';
 
 -- kontrola H1/H5: czy visitor_id z >= 50 sesjami to konta testowe
 SELECT count(*) AS visitorzy_50plus,
-       count(*) FILTER (visitor_id IN (SELECT uv.visitor_id FROM user_visitor uv JOIN test_users USING (user_id))) AS nalezace_do_kont_testowych
-FROM (SELECT visitor_id FROM s GROUP BY 1 HAVING count(*) >= 50);
+       count(*) FILTER (visitor_id IN (SELECT visitor_id FROM test_visitors)) AS nalezace_do_kont_testowych
+FROM (SELECT visitor_id FROM raw_sessions GROUP BY 1 HAVING count(*) >= 50);
 
 -- kontrola H1: zamówienia kont testowych bez kodu TEST-QA (rabat, specjalizacja, czas wizyty)
 SELECT discount_type, specialization, count(*) AS zamowienia, round(avg(duration_min), 1) AS sr_czas_min, round(avg(amount_paid), 2) AS sr_kwota
-FROM o WHERE user_id IN (SELECT user_id FROM test_users) AND coalesce(promo_code, '') <> 'TEST-QA'
+FROM o_all WHERE user_id IN (SELECT user_id FROM test_users) AND coalesce(promo_code, '') <> 'TEST-QA'
 GROUP BY 1, 2 ORDER BY 3 DESC;
 
 -- zamówienia oznaczone przez hipotezy (jedno zamówienie może mieć kilka oznaczeń)
 CREATE OR REPLACE TABLE flag_orders AS
-SELECT 'H1 konta testowe (22 konta TEST-QA)' AS h, order_id FROM o WHERE user_id IN (SELECT user_id FROM test_users)
-UNION ALL SELECT 'H2 kody promo nowe w P2 (L4SZYBKO20, TIKTOK25)', order_id FROM o WHERE promo_code IN ('L4SZYBKO20', 'TIKTOK25')
+SELECT 'H2 kody promo nowe w P2 (L4SZYBKO20, TIKTOK25)' AS h, order_id FROM o WHERE promo_code IN ('L4SZYBKO20', 'TIKTOK25')
 UNION ALL SELECT 'H8 pierwsze zamówienie anulowane, nic więcej', f.order_id FROM first_order f
           WHERE f.status = 'cancelled' AND NOT EXISTS (SELECT 1 FROM o x WHERE x.user_id = f.user_id AND x.status <> 'cancelled');
 
@@ -26,7 +23,8 @@ UNION ALL SELECT 'H8 pierwsze zamówienie anulowane, nic więcej', f.order_id FR
 CREATE OR REPLACE TABLE flag_new AS
 SELECT h, f.user_id FROM flag_orders fo JOIN first_order f USING (order_id)
 UNION ALL SELECT 'H4 nowi z kanałów płatnych za klik, przypisanie last', user_id FROM attribution WHERE paid_last
-UNION ALL SELECT 'H4 nowi z kanałów płatnych za klik, przypisanie first', user_id FROM attribution WHERE paid_first;
+UNION ALL SELECT 'H4 nowi z kanałów płatnych za klik, przypisanie first', user_id FROM attribution WHERE paid_first
+UNION ALL SELECT 'H4 nowi z kanałów płatnych za klik, przypisanie lnd', user_id FROM attribution WHERE paid_lnd;
 
 -- wpływ na zamówienia i przychód
 CREATE OR REPLACE TABLE impact_orders AS
@@ -49,7 +47,7 @@ CREATE OR REPLACE TABLE impact_go AS
 SELECT 'H1 konta testowe (22 konta TEST-QA)' AS h,
        count(*) FILTER (period(purchased_at) = 'P1') AS go_p1,
        count(*) FILTER (period(purchased_at) = 'P2') AS go_p2
-FROM g WHERE user_id IN (SELECT user_id FROM test_users);
+FROM g WHERE false;  -- konta testowe wykluczone w bazie (A11); GO kont testowych: 0
 
 -- tabela wpływu: skala (P1, P2) i zmiana wzrostu KPI w pp po wyłączeniu oznaczonych
 SELECT coalesce(io.h, inw.h) AS hipoteza,
@@ -99,7 +97,7 @@ WHERE a.okres = 'P2' GROUP BY 1, 2 ORDER BY 1, 2;
 -- korekta H1/H3: zamówienia kont testowych bez TEST-QA są wszystkie `refunded` (pełny zwrot)
 -- ile zwrotów `refunded` z H3 przypada na konta testowe
 SELECT period(created_at) AS okres, visit_purpose, consultation_mode, count(*) AS refunded, round(sum(refund_amount), 2) AS zwroty_zl
-FROM o WHERE status = 'refunded' AND user_id IN (SELECT user_id FROM test_users)
+FROM o_all WHERE status = 'refunded' AND user_id IN (SELECT user_id FROM test_users)
 GROUP BY 1, 2, 3 ORDER BY 1, 2, 3;
 
 -- H3 bez kont testowych: refunded i udział zwrotów w przychodzie
@@ -110,4 +108,4 @@ SELECT period(created_at) AS okres, count(*) AS zamowienia,
        count(*) FILTER (status = 'refunded' AND specialization = 'internista' AND visit_purpose = 'l4') AS refunded_internista_l4,
        count(*) FILTER (specialization = 'internista' AND visit_purpose = 'l4') AS internista_l4,
        round(100.0 * refunded_internista_l4 / internista_l4, 1) AS pct_refunded_internista_l4
-FROM o WHERE user_id NOT IN (SELECT user_id FROM test_users) GROUP BY 1 ORDER BY 1;
+FROM o GROUP BY 1 ORDER BY 1;

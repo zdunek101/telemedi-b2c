@@ -27,8 +27,12 @@ Krok 0 odtwarza dashboard na surowych danych (`sql/01_dashboard_reproduction.sql
 |--:|---|--:|--:|--:|--:|--:|--:|
 | 0 | dashboard | 16 251 | 24 689 | | | +51,9% | |
 | 2 | minus konta testowe (A11) | 16 231 | 24 687 | −20 | −2 | +52,1% | +0,2 pp |
+| 3 | definicja Q1 a2: pierwsze zamówienie nieanulowane | 15 679 | 23 807 | −552 | −880 | +51,8% | −0,3 pp |
 
 Duplikaty (krok 1) nie zmieniają liczby nowych pacjentów.
+Krok 3 robi dwie rzeczy naraz:
+- wyklucza pacjentów, którzy mają tylko anulowane zamówienia (P1 539, P2 893),
+- przesuwa datę kohorty na pierwsze nieanulowane zamówienie. 13 pacjentów anulowało pierwsze zamówienie w P1, a pierwsze opłacone mieli w P2: P1 −539 − 13 = −552, P2 −893 + 13 = −880.
 
 ## Uwagi
 

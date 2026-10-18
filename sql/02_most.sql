@@ -1,7 +1,8 @@
 -- Most od KPI z dashboardu do wartości realnych, krok po kroku (kroki kumulują się).
 -- Okresy: P1 = X 2024 – IX 2025, P2 = X 2025 – IX 2026, po created_at w czasie polskim (A4, A10).
 -- Kroki: 0 = jak dashboard (surowe dane, sql/01), 1 = bez duplikatów (A8),
---        2 = bez kont testowych (A11), 3 = przychód netto po zwrotach.
+--        2 = bez kont testowych (A11), 3 = przychód netto po zwrotach;
+--        nowi pacjenci: 3 = definicja Q1 a2 (pierwsze zamówienie nieanulowane).
 
 CREATE OR REPLACE MACRO period(ts) AS
     CASE WHEN ts >= TIMESTAMP '2024-10-01' AND ts < TIMESTAMP '2025-10-01' THEN 'P1'
@@ -25,7 +26,9 @@ UNION ALL SELECT 'przychód z konsultacji', 1, 'minus duplikaty (A8)', period(cr
 UNION ALL SELECT 'przychód z konsultacji', 2, 'minus konta testowe (A11)', period(created_at), sum(amount_paid) FROM o_clean GROUP BY ALL
 UNION ALL SELECT 'przychód z konsultacji', 3, 'minus zwroty (refund_amount)', period(created_at), sum(amount_paid - refund_amount) FROM o_clean GROUP BY ALL
 UNION ALL SELECT 'nowi pacjenci', 0, 'dashboard: pierwsze zamówienie, dowolny status', period(created_at), count(*) FROM first_orders('raw_orders') GROUP BY ALL
-UNION ALL SELECT 'nowi pacjenci', 2, 'minus konta testowe (A11)', period(created_at), count(*) FROM first_orders('o_clean') GROUP BY ALL;
+UNION ALL SELECT 'nowi pacjenci', 2, 'minus konta testowe (A11)', period(created_at), count(*) FROM first_orders('o_clean') GROUP BY ALL
+UNION ALL SELECT 'nowi pacjenci', 3, 'definicja Q1 a2: pierwsze zamówienie nieanulowane', period(created_at), count(*)
+          FROM (SELECT user_id, min(created_at) AS created_at FROM o_clean WHERE status <> 'cancelled' GROUP BY 1) GROUP BY ALL;
 
 WITH w AS (
     SELECT kpi, krok, opis,

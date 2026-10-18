@@ -18,9 +18,13 @@
 
 Marża robocza: `amount_paid − refund_amount − koszt lekarza + opłaty GO`. Koszty pozyskania (kampanie, afiliacja) liczone osobno, przy CAC.
 
-## Otwarte pytania (decyzja po zobaczeniu danych)
+## Pytania definicyjne (Q1–Q4 zamknięte po zobaczeniu danych)
 
-### Q1. Definicja kohorty
+### Q1. Definicja kohorty — **ZAMKNIĘTE**
+
+**Decyzja:** kohorta = dzień **pierwszego nieanulowanego zamówienia** (wariant a2, dzień polski). Kto anulował i nic nie opłacił, nie jest pacjentem. Pacjent, który anulował pierwsze zamówienie, a opłacił później, wchodzi do kohorty z dniem tego opłaconego. Nowi pacjenci: P1 15 679, P2 23 807, +51,8%. Różnica do definicji dashboardu jest w moście (`docs/most.md`, nowi pacjenci, krok 3). Porównanie wariantów: `sql/09_definition_variants.sql`, Q1.1–Q1.3.
+
+Rozważane warianty:
 
 - **a) Dzień pierwszego opłaconego zamówienia.** Retencja kupujących, zgodna z „pacjentami z pierwszym zakupem” na dashboardzie.
 - **b) Dzień rejestracji.** Obejmuje konta bez zakupu; mierzy raczej aktywację niż retencję.
@@ -50,7 +54,11 @@ Do uwzględnienia niezależnie od wariantu:
 - pacjent może wybrać usługę w jednej sesji, a zapłacić w innej (lejek sesyjny vs pacjenta),
 - zdarzenia mogą być zdublowane (eksport surowy) — liczymy unikalne sesje na krok.
 
-### Q3. Przypisanie źródła pacjenta
+### Q3. Przypisanie źródła pacjenta — **ZAMKNIĘTE**
+
+**Decyzja:** wariant główny = **ostatnia sesja niebezpośrednia przed pierwszym zakupem** (lnd), szukana po wszystkich `visitor_id` pacjenta. Jeśli takiej sesji nie ma: direct. Jak ktoś przyszedł z reklamy i wrócił bezpośrednio, to zasługa reklamy. Jak wrócił z innej reklamy, to zasługa tej drugiej. Warianty **first** i **last** pokazujemy obok jako zakres niepewności. Przykład: wzrost nowych bez kanałów płatnych +17,8% (lnd), zakres +12,6% (first) do +25,5% (last). Ile wzrostu reklama daje naprawdę, nie wynika z tych danych (`docs/nierozstrzygniete.md`, N2).
+
+Rozważane warianty:
 
 - **a) Pierwszy kontakt** — pierwsza sesja pacjenta.
 - **b) Ostatni kontakt** — sesja płatności (`orders.session_id`).
@@ -59,7 +67,11 @@ Do uwzględnienia niezależnie od wariantu:
 Ograniczenie: sesje sprzed zalogowania łączymy z pacjentem tylko przez `visitor_id`, a pacjent może mieć ich kilka.
 Przy CAC pamiętać: wydatki przyciągają też powracających pacjentów; opóźnienie kliknięcie → zakup; kanały bez kosztu (direct, organic, e-mail, polecenia) to nie darmowe pozyskanie; możliwa kanibalizacja ruchu brandowego przez płatne kampanie.
 
-### Q4. Definicja powrotu (retencji)
+### Q4. Definicja powrotu (retencji) — **ZAMKNIĘTE**
+
+**Decyzja:** powrót = **kolejne zamówienie nieanulowane** po zamówieniu otwierającym kohortę (wariant b). Okno główne **90 dni**, obok pokazujemy 30 i 180 dni. Liczymy tylko kohorty z pełnym oknem (do 30.09.2026). Uzupełniająca miara wartości: kolejne zamówienia i przychód netto z kolejnych zamówień na pacjenta w oknie. Wariant c (zamówienie lub samo GO) w tych danych daje to samo co a, bo nikt nie wrócił samym GO. Porównanie: `sql/09_definition_variants.sql`, Q4.1–Q4.3.
+
+Rozważane warianty:
 
 - **a) Kolejne zamówienie dowolnego statusu.**
 - **b) Kolejne zamówienie bez `cancelled`.**
