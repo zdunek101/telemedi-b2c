@@ -4,8 +4,6 @@
 
 459 557 sesji · 52 422 kont · 24 miesiące
 
-> Źródło: https://claude.ai/artifact/B6qdqJiRuYmFEMbjizPWyD
-
 ---
 
 ## Kontekst
@@ -16,12 +14,10 @@ Poniżej masz dwa lata tego biznesu: każdą sesję na stronie, każdy krok lejk
 
 Na dashboardzie wygląda to dobrze. Ostatnie 12 miesięcy w porównaniu z poprzednimi dwunastoma:
 
-| Wskaźnik | Zmiana |
-|---|---|
-| pacjentów z pierwszym zakupem | **+52%** |
-| zamówień | **+61%** |
-| przychodu z konsultacji | **+50%** |
-| sprzedanych TelemediGO | **+40%** |
+- **+52%** pacjentów z pierwszym zakupem
+- **+61%** zamówień
+- **+50%** przychodu z konsultacji
+- **+40%** sprzedanych TelemediGO
 
 `X 2025 – IX 2026 wobec X 2024 – IX 2025`
 
@@ -52,11 +48,14 @@ Co z tych danych nie wynika i jakiego testu albo jakich informacji brakuje, żeb
 
 ## Co oddajesz
 
-| | |
-|---|---|
-| **Link do narzędzia** | Działające, otwierane w przeglądarce bez instalacji i bez zakładania konta. Kohorty i lejki muszą w nim być. Stack dowolny. |
-| **Lista priorytetów** | Od najważniejszego, z wartością, sposobem pomiaru i szacunkiem czasu wdrożenia każdej pozycji. Może być częścią narzędzia. |
-| **Ślad pracy** | Repozytorium albo eksport rozmów z AI: prompty, ślepe uliczki, poprawki. Nie sprzątaj go. Chcemy zobaczyć, jak pracujesz, a nie tylko co wyszło. |
+**Link do narzędzia**
+Działające, otwierane w przeglądarce bez instalacji i bez zakładania konta. Kohorty i lejki muszą w nim być. Stack dowolny.
+
+**Lista priorytetów**
+Od najważniejszego, z wartością, sposobem pomiaru i szacunkiem czasu wdrożenia każdej pozycji. Może być częścią narzędzia.
+
+**Ślad pracy**
+Repozytorium albo eksport rozmów z AI: prompty, ślepe uliczki, poprawki. Nie sprzątaj go. Chcemy zobaczyć, jak pracujesz, a nie tylko co wyszło.
 
 Linki odeślij tą samą drogą, którą przyszło do Ciebie zadanie.
 
@@ -97,96 +96,84 @@ Sesje i zdarzenia pochodzą z analityki strony i mają czas w UTC. Pozostałe ta
 
 Konta pacjentów.
 
-| kolumna | opis |
-|---|---|
-| `user_id` | identyfikator konta |
-| `registered_at` | moment założenia konta |
-| `birth_year` | rok urodzenia |
-| `gender` | K lub M |
-| `region` | województwo |
-| `city_size` | wieś albo miasto w trzech przedziałach wielkości |
-| `marketing_consent` | 1, jeśli pacjent zgodził się na komunikację marketingową |
+- `user_id` — identyfikator konta
+- `registered_at` — moment założenia konta
+- `birth_year` — rok urodzenia
+- `gender` — K lub M
+- `region` — województwo
+- `city_size` — wieś albo miasto w trzech przedziałach wielkości
+- `marketing_consent` — 1, jeśli pacjent zgodził się na komunikację marketingową
 
 ### `sessions_2024q4.csv … sessions_2026q3.csv`
 
 Sesje na telemedi.com, eksport kwartalny. Czas w UTC.
 
-| kolumna | opis |
-|---|---|
-| `session_id` | identyfikator sesji |
-| `visitor_id` | identyfikator przeglądarki (cookie); jeden pacjent może mieć kilka |
-| `user_id` | wypełnione tylko wtedy, gdy pacjent był w tej sesji zalogowany |
-| `started_at_utc` | początek sesji |
-| `utm_source` | źródło wejścia; puste przy wejściu bezpośrednim |
-| `utm_medium` | rodzaj ruchu |
-| `utm_campaign` | kampania |
-| `device` | mobile, desktop, tablet |
-| `os` | system operacyjny |
-| `browser` | przeglądarka; Instagram, Facebook i TikTok to przeglądarki wbudowane w aplikacje |
-| `landing_page` | pierwsza strona sesji |
+- `session_id` — identyfikator sesji
+- `visitor_id` — identyfikator przeglądarki (cookie); jeden pacjent może mieć kilka
+- `user_id` — wypełnione tylko wtedy, gdy pacjent był w tej sesji zalogowany
+- `started_at_utc` — początek sesji
+- `utm_source` — źródło wejścia; puste przy wejściu bezpośrednim
+- `utm_medium` — rodzaj ruchu
+- `utm_campaign` — kampania
+- `device` — mobile, desktop, tablet
+- `os` — system operacyjny
+- `browser` — przeglądarka; Instagram, Facebook i TikTok to przeglądarki wbudowane w aplikacje
+- `landing_page` — pierwsza strona sesji
 
 ### `events_2024h2.csv … events_2026h2.csv`
 
 Kroki lejka zakupowego, eksport półroczny. Czas w UTC. Sesja bez żadnego zdarzenia to sesja, w której pacjent nie wybrał usługi.
 
-| kolumna | opis |
-|---|---|
-| `session_id` | sesja, w której zaszło zdarzenie |
-| `event_name` | kolejno: `service_selected`, `slot_selected`, `account_completed` (logowanie albo rejestracja), `payment_started`, `payment_succeeded` |
-| `event_at_utc` | moment zdarzenia |
+- `session_id` — sesja, w której zaszło zdarzenie
+- `event_name` — kolejno: `service_selected`, `slot_selected`, `account_completed` (logowanie albo rejestracja), `payment_started`, `payment_succeeded`
+- `event_at_utc` — moment zdarzenia
 
 ### `orders.csv`
 
 Opłacone zamówienia konsultacji.
 
-| kolumna | opis |
-|---|---|
-| `order_id` | identyfikator zamówienia |
-| `user_id` | konto pacjenta |
-| `session_id` | sesja, w której zapłacono |
-| `created_at` | moment płatności |
-| `specialization` | internista, pediatra albo jeden z ośmiu specjalistów |
-| `visit_purpose` | konsultacja, e_recepta, l4, skierowanie |
-| `consultation_mode` | phone, chat, video |
-| `scheduled_at` | termin, na który pacjent umówił wizytę |
-| `started_at` | moment, w którym lekarz faktycznie zaczął wizytę |
-| `duration_min` | czas trwania wizyty |
-| `list_price` | cena katalogowa |
-| `discount_type` | none, go (TelemediGO), promo (kod rabatowy) |
-| `promo_code` | użyty kod |
-| `amount_paid` | kwota zapłacona za konsultację, bez opłaty za TelemediGO |
-| `payment_method` | blik, card, transfer |
-| `status` | `completed`, `cancelled` (przed wizytą, pełny zwrot), `no_show` (pacjent nie odebrał, bez zwrotu), `refunded` (wizyta odbyta, zwrot po niej) |
-| `refund_amount` | kwota zwrotu |
-| `rating` | ocena wizyty 1–5; większość pacjentów nie ocenia |
+- `order_id` — identyfikator zamówienia
+- `user_id` — konto pacjenta
+- `session_id` — sesja, w której zapłacono
+- `created_at` — moment płatności
+- `specialization` — internista, pediatra albo jeden z ośmiu specjalistów
+- `visit_purpose` — konsultacja, e_recepta, l4, skierowanie
+- `consultation_mode` — phone, chat, video
+- `scheduled_at` — termin, na który pacjent umówił wizytę
+- `started_at` — moment, w którym lekarz faktycznie zaczął wizytę
+- `duration_min` — czas trwania wizyty
+- `list_price` — cena katalogowa
+- `discount_type` — none, go (TelemediGO), promo (kod rabatowy)
+- `promo_code` — użyty kod
+- `amount_paid` — kwota zapłacona za konsultację, bez opłaty za TelemediGO
+- `payment_method` — blik, card, transfer
+- `status` — `completed`, `cancelled` (przed wizytą, pełny zwrot), `no_show` (pacjent nie odebrał, bez zwrotu), `refunded` (wizyta odbyta, zwrot po niej)
+- `refund_amount` — kwota zwrotu
+- `rating` — ocena wizyty 1–5; większość pacjentów nie ocenia
 
 ### `go_memberships.csv`
 
 Zakupy TelemediGO. Jednorazowa opłata 89 zł za 12 miesięcy daje 50% zniżki na wizyty u internisty (w tym e-receptę, L4 i skierowanie) oraz 20% na pozostałych specjalistów. Pacjent kupuje je przy kasie razem z konsultacją albo osobno. Członkostwo nie odnawia się samo.
 
-| kolumna | opis |
-|---|---|
-| `membership_id` | identyfikator członkostwa |
-| `user_id` | konto pacjenta |
-| `purchased_at` | moment zakupu |
-| `valid_until` | ostatni dzień ważności |
-| `amount_paid` | 89.00 |
-| `order_id` | zamówienie, przy którym kupiono GO; puste, jeśli kupiono osobno |
-| `session_id` | sesja zakupu |
+- `membership_id` — identyfikator członkostwa
+- `user_id` — konto pacjenta
+- `purchased_at` — moment zakupu
+- `valid_until` — ostatni dzień ważności
+- `amount_paid` — 89.00
+- `order_id` — zamówienie, przy którym kupiono GO; puste, jeśli kupiono osobno
+- `session_id` — sesja zakupu
 
 ### `marketing_spend.csv`
 
 Dzienne wydatki na kampanie płatne za klik: Google Ads, Meta, TikTok. Afiliacja jest rozliczana prowizją 25 zł za pierwsze opłacone zamówienie pacjenta i w tej tabeli jej nie ma. Koszt e-maili i SMS-ów pomiń.
 
-| kolumna | opis |
-|---|---|
-| `date` | dzień według czasu polskiego |
-| `utm_source` | jak w sesjach |
-| `utm_medium` | jak w sesjach |
-| `utm_campaign` | jak w sesjach |
-| `impressions` | wyświetlenia |
-| `clicks` | kliknięcia |
-| `spend_pln` | koszt netto |
+- `date` — dzień według czasu polskiego
+- `utm_source` — jak w sesjach
+- `utm_medium` — jak w sesjach
+- `utm_campaign` — jak w sesjach
+- `impressions` — wyświetlenia
+- `clicks` — kliknięcia
+- `spend_pln` — koszt netto
 
 **Kosztu lekarza w danych nie ma.** Jeśli liczysz marżę, przyjmij za każdą odbytą wizytę 25 zł u internisty, 200 zł u psychiatry i 100 zł u każdego innego specjalisty. Lekarz dostaje wynagrodzenie także za wizytę, za którą zwróciliśmy pacjentowi opłatę.
 
