@@ -1,0 +1,12 @@
+# Surowe dane od Telemedi (nie commitujemy CSV, README zostaje)
+data/*.csv
+
+# Pliki bazy danych
+*.db
+*.db-wal
+*.db-shm
+*.duckdb
+*.duckdb.wal
+*.sqlite
+*.sqlite3
+*.parquet
