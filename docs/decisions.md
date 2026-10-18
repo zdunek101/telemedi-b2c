@@ -29,6 +29,7 @@ Do rozstrzygnięcia przy okazji:
 - czy pierwsze zamówienie później anulowane (`cancelled`) otwiera kohortę,
 - czy zakup samego GO (bez konsultacji) czyni kogoś pacjentem,
 - jak dokładnie dashboard liczy „pacjentów z pierwszym zakupem” (odtworzyć przed podważaniem),
+  **ustalone:** dashboard liczy nowych pacjentów łącznie z tymi, których pierwsze zamówienie anulowano (najwcześniejsze `created_at`, dowolny status): P1 16 251 → P2 24 689, +51,9% (`sql/01_dashboard_reproduction.sql`, wariant a). Zastrzeżenie: wariant bez anulowanych daje 15 699 → 23 809, +51,7%, co też zaokrągla się do +52%,
 - obsługa uciętego okna obserwacji: porównujemy tylko stałe okna (np. 30/60/90 dni) dla kohort, które je mają,
 - szum kohort dziennych: wygładzanie i/lub przedziały ufności.
 
@@ -63,7 +64,8 @@ Oraz miara: odsetek powracających vs przychód / marża na pacjenta kohorty.
 
 ## Do sprawdzenia w audycie danych
 
-- [ ] Czy dashboard liczył zdublowane zamówienia z 10–24.06.2026 (A8). Jeśli tak, 604 duplikaty są częścią pokazanego wzrostu zamówień (+61%) i przychodu.
+- [x] Czy dashboard liczył zdublowane zamówienia z 10–24.06.2026 (A8). Jeśli tak, 604 duplikaty są częścią pokazanego wzrostu zamówień (+61%) i przychodu.
+  **Wynik:** tak. +61% zamówień i +50% przychodu wychodzą tylko z duplikatami; bez nich +58,3% i +48,1% (`docs/most.md`).
 - [ ] 85 pacjentów z dwoma członkostwami GO: czy drugie kupiono po wygaśnięciu pierwszego, czy w trakcie jego ważności (nakładające się okresy).
 
 - [ ] Dashboard: +61% zamówień przy +50% przychodu — czy „zamówienia” obejmują `cancelled`, co obniża średnią kwotę (rabaty, zmiana mieszanki usług).
