@@ -11,6 +11,8 @@ Repozytorium zawiera:
 - **analizę** w DuckDB SQL (`sql/`) z opisami wyników (`docs/`),
 - **ślad pracy**: historię commitów, decyzje definicyjne ([docs/decisions.md](docs/decisions.md)), zasady pracy z AI ([CLAUDE.md](CLAUDE.md)) i podsumowanie przebiegu ([docs/przebieg.md](docs/przebieg.md)).
 
+Eksport rozmowy z AI jest w załączniku maila (zawiera dane osobowe, dlatego nie ma go w repo).
+
 **Odpowiedź w skrócie: tylko częściowo.**
 - Po oczyszczeniu danych zamówienia rosną o +55,7% zamiast +60,7%, a przychód netto o +44,8% zamiast +50,3%.
 - Nowych pacjentów bez kanałów płatnych przybywa tylko o +17,7% (zakres +12,7% do +25,4%).
