@@ -15,6 +15,9 @@
 | A9 | Afiliacja (`utm_medium = affiliate`) to jeden partner (`rankinglekarzy`); brak `utm_campaign` w jej sesjach nie jest problemem. Puste `utm_campaign` w ruchu organicznym to stan normalny. | profil, decyzja |
 | A10 | Zamówienia przypisujemy do dnia po `created_at` (moment płatności). `scheduled_at` / `started_at` mogą wychodzić poza okres danych (do 2026-10-02) i nie służą do datowania. | profil, decyzja |
 | A11 | Konta testowe wykluczamy w całości z całej analizy: 22 konta, które choć raz użyły kodu `TEST-QA`, ze wszystkimi 2 071 zamówieniami (1 781 z `TEST-QA` za 1 zł i 290 bez kodu za 89 zł, wszystkie 290 `refunded` z pełnym zwrotem). Wspólny profil: mazowieckie, brak zgody marketingowej, internista, wizyty po 1 min. | audyt H1 (`docs/audit.md`), decyzja |
+| A12 | Obciążenie lekarzy mierzymy liczbą wizyt umówionych na daną godzinę (`scheduled_at`, dzień × godzina, czas polski), a nie zamówieniami po `created_at`. Lekarza brakuje w chwili wizyty, nie płatności. Dzienna liczba wizyt jako uzupełnienie. | decyzja |
+| A13 | Koszt afiliacji w CAC: 25 zł za **każde** pierwsze zamówienie pacjenta przypisane do afiliacji, także później anulowane (tyle płacimy, A5). Mianownik CAC: nowi pacjenci według Q1 a2. | decyzja |
+| A14 | CAC liczymy w tych samych miesiącach co kohorty z pełnym oknem marży: koszt i marża dotyczą tych samych pacjentów. Dla marży 90 dni: koszty i kohorty X 2025 – 2.07.2026; dla marży 180 dni: X 2025 – 3.04.2026. | decyzja |
 
 Marża robocza: `amount_paid − refund_amount − koszt lekarza + opłaty GO`. Koszty pozyskania (kampanie, afiliacja) liczone osobno, przy CAC.
 
