@@ -56,7 +56,7 @@ Do uwzględnienia niezależnie od wariantu:
 
 ### Q3. Przypisanie źródła pacjenta — **ZAMKNIĘTE**
 
-**Decyzja:** wariant główny = **ostatnia sesja niebezpośrednia przed pierwszym zakupem** (lnd), szukana po wszystkich `visitor_id` pacjenta. Jeśli takiej sesji nie ma: direct. Jak ktoś przyszedł z reklamy i wrócił bezpośrednio, to zasługa reklamy. Jak wrócił z innej reklamy, to zasługa tej drugiej. Warianty **first** i **last** pokazujemy obok jako zakres niepewności. Przykład: wzrost nowych bez kanałów płatnych +17,8% (lnd), zakres +12,6% (first) do +25,5% (last). Ile wzrostu reklama daje naprawdę, nie wynika z tych danych (`docs/nierozstrzygniete.md`, N2).
+**Decyzja:** wariant główny = **ostatnia sesja niebezpośrednia przed pierwszym zakupem** (lnd), szukana po wszystkich `visitor_id` pacjenta. Jeśli takiej sesji nie ma: direct. Jak ktoś przyszedł z reklamy i wrócił bezpośrednio, to zasługa reklamy. Jak wrócił z innej reklamy, to zasługa tej drugiej. Warianty **first** i **last** pokazujemy obok jako zakres niepewności. Przykład (nowi według Q1 a2): wzrost nowych bez kanałów płatnych +17,7% (lnd), zakres +12,7% (first) do +25,4% (last). Ile wzrostu reklama daje naprawdę, nie wynika z tych danych (`docs/nierozstrzygniete.md`, N2).
 
 Rozważane warianty:
 

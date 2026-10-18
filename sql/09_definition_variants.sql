@@ -134,3 +134,44 @@ FROM (
 ) x JOIN ret r USING (user_id) JOIN first_order f USING (user_id)
 WHERE kanal IN ('google / cpc', 'meta / paid_social', 'tiktok / paid_social', 'google / organic', '(direct)')
 GROUP BY 1, 2 ORDER BY 2, 1;
+
+-- ===================== Q3 na kohorcie Q1 a2 (do N2) =====================
+-- jak attribution z 06_audit_h4.sql, ale kotwica = pierwsze zamówienie nieanulowane (Q1 a2)
+CREATE OR REPLACE TABLE first_patient_order AS
+    SELECT * FROM o WHERE status <> 'cancelled'
+    QUALIFY row_number() OVER (PARTITION BY user_id ORDER BY created_at, order_id) = 1;
+
+CREATE OR REPLACE TABLE attribution_a2 AS
+WITH base_a2 AS (
+    SELECT f.user_id, f.created_at, period(f.created_at) AS okres, s.utm_source AS src_last, s.utm_medium AS med_last
+    FROM first_patient_order f LEFT JOIN s USING (session_id)
+),
+cand AS (
+    SELECT b.user_id, s.session_id, s.started_at, s.utm_source, s.utm_medium
+    FROM base_a2 b JOIN user_visitor uv USING (user_id)
+    JOIN s ON s.visitor_id = uv.visitor_id AND s.started_at <= b.created_at
+),
+ft AS (SELECT user_id, utm_source src, utm_medium med FROM cand
+       QUALIFY row_number() OVER (PARTITION BY user_id ORDER BY started_at, session_id) = 1),
+lnd AS (SELECT user_id, utm_source src, utm_medium med FROM cand WHERE utm_source IS NOT NULL
+        QUALIFY row_number() OVER (PARTITION BY user_id ORDER BY started_at DESC, session_id DESC) = 1)
+SELECT b.user_id, b.okres,
+       EXISTS (SELECT 1 FROM paid_pairs p WHERE p.utm_source = b.src_last AND p.utm_medium = b.med_last) AS paid_last,
+       EXISTS (SELECT 1 FROM paid_pairs p WHERE p.utm_source = ft.src AND p.utm_medium = ft.med) AS paid_first,
+       EXISTS (SELECT 1 FROM paid_pairs p WHERE p.utm_source = lnd.src AND p.utm_medium = lnd.med) AS paid_lnd
+FROM base_a2 b LEFT JOIN ft USING (user_id) LEFT JOIN lnd USING (user_id);
+
+-- Q3.3 nowi pacjenci (Q1 a2): wzrost ogółem i bez kanałów płatnych, trzy warianty przypisania
+SELECT wariant,
+       count(*) FILTER (okres = 'P1') AS nowi_p1, count(*) FILTER (okres = 'P2') AS nowi_p2,
+       growth(count(*) FILTER (okres = 'P1'), count(*) FILTER (okres = 'P2')) AS wzrost_ogolem,
+       count(*) FILTER (okres = 'P1' AND NOT platny) AS bez_platnych_p1,
+       count(*) FILTER (okres = 'P2' AND NOT platny) AS bez_platnych_p2,
+       growth(count(*) FILTER (okres = 'P1' AND NOT platny), count(*) FILTER (okres = 'P2' AND NOT platny)) AS wzrost_bez_platnych,
+       round(growth(count(*) FILTER (okres = 'P1' AND NOT platny), count(*) FILTER (okres = 'P2' AND NOT platny))
+             - growth(count(*) FILTER (okres = 'P1'), count(*) FILTER (okres = 'P2')), 1) AS pp
+FROM (
+    SELECT 'lnd (główny)' wariant, okres, paid_lnd platny FROM attribution_a2
+    UNION ALL SELECT 'first', okres, paid_first FROM attribution_a2
+    UNION ALL SELECT 'last', okres, paid_last FROM attribution_a2
+) WHERE okres IS NOT NULL GROUP BY 1 ORDER BY 1;
