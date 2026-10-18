@@ -42,6 +42,15 @@ Do rozstrzygnięcia przy okazji:
 
 **Decyzja:** mianownik lejka = **wszystkie sesje** (wariant a). Audyt H5 nie znalazł botów: brak sesji tego samego `visitor_id` w odstępie < 10 s, a 21 `visitor_id` z ≥ 50 sesjami to konta testowe (wykluczone przez A11). Sesje bez zdarzeń (61–67%) wynikają z bloga i przeglądarek w aplikacjach (`docs/audit.md`, H5).
 
+**Kroki lejka.** Kolejność jest ścisła: krok liczy się, jeśli sesja doszła do poprzedniego.
+1. `service_selected`,
+2. `slot_selected`,
+3. **konto** = `account_completed` **albo** `user_id` w sesji (zalogowany pacjent nie ma `account_completed`),
+4. `payment_started`,
+5. `payment_succeeded`.
+
+Zakup samego GO (bez `service_selected`) nie wchodzi do lejka konsultacji. Kontrola: sesje, które przeszły wszystkie 5 kroków = 63 207 = liczba zamówień w bazie A8 + A11 (`sql/11_daily_series.sql`).
+
 Rozważane warianty:
 
 - **a) Wszystkie sesje.** Zawiera powracających zalogowanych, wejścia na strony nieofertowe, wielokrotne sesje i ewentualne boty.

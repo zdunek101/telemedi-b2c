@@ -44,8 +44,9 @@ WITH n AS (SELECT cohort_day, count(*) AS nowi FROM patients GROUP BY 1),
          SELECT cohort_day, okno,
                 count(*) AS pacjenci,
                 count(*) FILTER (powrot) AS powracajacy,
-                sum(netto_zamowienia + oplaty_go) AS netto,
-                sum(netto_zamowienia + oplaty_go - koszt_lekarza) AS marza
+                -- sumy dziesiętne: wynik niezależny od kolejności sumowania (powtarzalne zaokrąglenia)
+                sum((netto_zamowienia + oplaty_go)::DECIMAL(14, 2)) AS netto,
+                sum((netto_zamowienia + oplaty_go - koszt_lekarza)::DECIMAL(14, 2)) AS marza
          FROM patient_windows GROUP BY 1, 2
      )
 SELECT n.cohort_day,
