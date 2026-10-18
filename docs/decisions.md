@@ -11,6 +11,9 @@
 | A5 | Afiliacja: 25 zł za pierwsze opłacone zamówienie pacjenta, bez dodatkowych reguł partnera. Według README liczy się także pierwsze zamówienie później anulowane albo zwrócone. | zadanie, README, decyzja |
 | A6 | E-mail i SMS: koszt zerowy. Program poleceń: bez kosztu w danych. | zadanie, README |
 | A7 | 1 października 2024 to pierwszy dzień sprzedaży; wcześniejszej historii nie ma, więc pierwsze zamówienie w danych jest prawdziwym pierwszym zamówieniem. | README |
+| A8 | Zdublowane zamówienia usuwamy, zostaje jedna kopia. Dotyczy 604 `order_id` z identycznymi 2 wierszami (wszystkie `created_at` 10–24.06.2026); `orders` 65 882 → 65 278 wierszy. | profil (`docs/data_quality.md`), decyzja |
+| A9 | Afiliacja (`utm_medium = affiliate`) to jeden partner (`rankinglekarzy`); brak `utm_campaign` w jej sesjach nie jest problemem. Puste `utm_campaign` w ruchu organicznym to stan normalny. | profil, decyzja |
+| A10 | Zamówienia przypisujemy do dnia po `created_at` (moment płatności). `scheduled_at` / `started_at` mogą wychodzić poza okres danych (do 2026-10-02) i nie służą do datowania. | profil, decyzja |
 
 Marża robocza: `amount_paid − refund_amount − koszt lekarza + opłaty GO`. Koszty pozyskania (kampanie, afiliacja) liczone osobno, przy CAC.
 
@@ -59,6 +62,9 @@ Przy CAC pamiętać: wydatki przyciągają też powracających pacjentów; opó�
 Oraz miara: odsetek powracających vs przychód / marża na pacjenta kohorty.
 
 ## Do sprawdzenia w audycie danych
+
+- [ ] Czy dashboard liczył zdublowane zamówienia z 10–24.06.2026 (A8). Jeśli tak, 604 duplikaty są częścią pokazanego wzrostu zamówień (+61%) i przychodu.
+- [ ] 85 pacjentów z dwoma członkostwami GO: czy drugie kupiono po wygaśnięciu pierwszego, czy w trakcie jego ważności (nakładające się okresy).
 
 - [ ] Dashboard: +61% zamówień przy +50% przychodu — czy „zamówienia” obejmują `cancelled`, co obniża średnią kwotę (rabaty, zmiana mieszanki usług).
 - [ ] `discount_type = go` a aktywne członkostwo GO w dniu zamówienia.

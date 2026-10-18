@@ -10,3 +10,7 @@ data/*.csv
 *.sqlite
 *.sqlite3
 *.parquet
+
+# Środowisko Pythona
+.venv/
+__pycache__/
