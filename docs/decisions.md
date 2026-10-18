@@ -14,6 +14,7 @@
 | A8 | Zdublowane zamówienia usuwamy, zostaje jedna kopia. Dotyczy 604 `order_id` z identycznymi 2 wierszami (wszystkie `created_at` 10–24.06.2026); `orders` 65 882 → 65 278 wierszy. | profil (`docs/data_quality.md`), decyzja |
 | A9 | Afiliacja (`utm_medium = affiliate`) to jeden partner (`rankinglekarzy`); brak `utm_campaign` w jej sesjach nie jest problemem. Puste `utm_campaign` w ruchu organicznym to stan normalny. | profil, decyzja |
 | A10 | Zamówienia przypisujemy do dnia po `created_at` (moment płatności). `scheduled_at` / `started_at` mogą wychodzić poza okres danych (do 2026-10-02) i nie służą do datowania. | profil, decyzja |
+| A11 | Konta testowe wykluczamy w całości z całej analizy: 22 konta, które choć raz użyły kodu `TEST-QA`, ze wszystkimi 2 071 zamówieniami (1 781 z `TEST-QA` za 1 zł i 290 bez kodu za 89 zł, wszystkie 290 `refunded` z pełnym zwrotem). Wspólny profil: mazowieckie, brak zgody marketingowej, internista, wizyty po 1 min. | audyt H1 (`docs/audit.md`), decyzja |
 
 Marża robocza: `amount_paid − refund_amount − koszt lekarza + opłaty GO`. Koszty pozyskania (kampanie, afiliacja) liczone osobno, przy CAC.
 
@@ -33,7 +34,11 @@ Do rozstrzygnięcia przy okazji:
 - obsługa uciętego okna obserwacji: porównujemy tylko stałe okna (np. 30/60/90 dni) dla kohort, które je mają,
 - szum kohort dziennych: wygładzanie i/lub przedziały ufności.
 
-### Q2. Mianownik lejka
+### Q2. Mianownik lejka — **ZAMKNIĘTE**
+
+**Decyzja:** mianownik lejka = **wszystkie sesje** (wariant a). Audyt H5 nie znalazł botów: brak sesji tego samego `visitor_id` w odstępie < 10 s, a 21 `visitor_id` z ≥ 50 sesjami to konta testowe (wykluczone przez A11). Sesje bez zdarzeń (61–67%) wynikają z bloga i przeglądarek w aplikacjach (`docs/audit.md`, H5).
+
+Rozważane warianty:
 
 - **a) Wszystkie sesje.** Zawiera powracających zalogowanych, wejścia na strony nieofertowe, wielokrotne sesje i ewentualne boty.
 - **b) Sesje z określonym `landing_page`** (strony ofertowe).
@@ -66,12 +71,16 @@ Oraz miara: odsetek powracających vs przychód / marża na pacjenta kohorty.
 
 - [x] Czy dashboard liczył zdublowane zamówienia z 10–24.06.2026 (A8). Jeśli tak, 604 duplikaty są częścią pokazanego wzrostu zamówień (+61%) i przychodu.
   **Wynik:** tak. +61% zamówień i +50% przychodu wychodzą tylko z duplikatami; bez nich +58,3% i +48,1% (`docs/most.md`).
-- [ ] 85 pacjentów z dwoma członkostwami GO: czy drugie kupiono po wygaśnięciu pierwszego, czy w trakcie jego ważności (nakładające się okresy).
+- [x] 85 pacjentów z dwoma członkostwami GO: czy drugie kupiono po wygaśnięciu pierwszego, czy w trakcie jego ważności (nakładające się okresy).
+  **Wynik:** wszystkie 85 po wygaśnięciu, 0 nakładających się (`docs/audit.md`, H6).
 
 - [ ] Dashboard: +61% zamówień przy +50% przychodu — czy „zamówienia” obejmują `cancelled`, co obniża średnią kwotę (rabaty, zmiana mieszanki usług).
-- [ ] `discount_type = go` a aktywne członkostwo GO w dniu zamówienia.
+- [x] `discount_type = go` a aktywne członkostwo GO w dniu zamówienia.
+  **Wynik:** wszystkie 9 738 zamówień z rabatem GO mają ważne członkostwo (`docs/audit.md`, H6).
 - [ ] `refund_amount` zgodny ze `status`.
-- [ ] Zamówienia sprzed `registered_at`.
+- [x] Zamówienia sprzed `registered_at`.
+  **Wynik:** 0, i 0 zamówień bez konta w `users` (`sql/04_audit_h1_h2.sql`, H1.6).
 - [ ] Zamówienia z `session_id`, którego nie ma w sesjach.
-- [ ] `payment_succeeded` w zdarzeniach vs wiersze w `orders` + `go_memberships` (utrata śledzenia, np. przeglądarki w aplikacjach).
+- [x] `payment_succeeded` w zdarzeniach vs wiersze w `orders` + `go_memberships` (utrata śledzenia, np. przeglądarki w aplikacjach).
+  **Wynik:** zgodne: sesje z płatnością P1 25 495 vs zamówienia + samo GO 25 494 (`docs/audit.md`, H5).
 - [ ] Sesje na granicy plików (kwartalne sesje vs półroczne zdarzenia, przełom dni UTC/PL).

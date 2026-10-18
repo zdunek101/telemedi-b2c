@@ -15,8 +15,12 @@ os.chdir(ROOT)  # ścieżki do data/ w SQL są względne
 con = duckdb.connect()
 for path in sys.argv[1:]:
     statements = con.extract_statements(Path(path).read_text(encoding="utf-8"))
-    for i, stmt in enumerate(statements):
+    print(f"== {path}")
+    for stmt in statements:
         rel = con.sql(stmt.query)
-        if i == len(statements) - 1 and rel is not None:
-            print(f"== {path}")
+        if rel is not None and stmt.type == duckdb.StatementType.SELECT:
+            # pierwsza linia komentarza nad zapytaniem jako nagłówek wyniku
+            head = next((l.strip() for l in stmt.query.strip().splitlines() if l.strip().startswith("--")), "")
+            if head:
+                print(head)
             rel.show(max_rows=1000, max_width=10000)
