@@ -1,6 +1,6 @@
 # Telemedi B2C — 24 miesiące
 
-**Narzędzie:** `[LINK DO NARZĘDZIA — uzupełnić po publikacji na GitHub Pages]`
+**Narzędzie:** https://zdunek101.github.io/telemedi-b2c/
 
 ## Co to jest
 

@@ -55,4 +55,3 @@ Praca trwała jeden dzień: 14 commitów od 16:32 do 21:35, a ten dokument jest 
 - **Przekroje kohort** poza źródłem i grupą L4: specjalizacja, cel wizyty, region, wiek, członkostwo GO.
 - **Wpływ czekania na zwroty i oceny wizyt.** Nie wliczony w wartość priorytetu 4.
 - **CAC przyrostowy.** Liczony tylko na przypisaniu, a nie na przyroście.
-- **Publikacja narzędzia.** Workflow GitHub Pages jest gotowy, ale repozytorium na GitHubie nie zostało jeszcze założone, a w README jest miejsce na link.
