@@ -60,7 +60,7 @@ function markerAnnotations(list, color, prefix) {
   const ann = {};
   list.forEach((m, i) => {
     ann[prefix + i] = { type: "line", xMin: m.day, xMax: m.day, borderColor: color, borderWidth: 1.2, borderDash: prefix === "cal" ? [4, 3] : [],
-      label: { display: true, content: m.id, position: "start", yAdjust: -(i % 3) * 16, font: { size: 10, weight: "bold" },
+      label: { display: true, content: m.id, position: prefix === "cal" ? "end" : "start", yAdjust: (prefix === "cal" ? 1 : -1) * (i % 3) * 16, font: { size: 10, weight: "bold" },
                backgroundColor: color, padding: 2 } };
   });
   return ann;
@@ -175,7 +175,9 @@ function renderCohorts() {
 
   let ann = {};
   if (el("c-cal").checked) ann = { ...ann, ...markerAnnotations(MARKERS.cal, "rgba(178,106,0,.9)", "cal") };
-  if (el("c-ev").checked) ann = { ...ann, ...markerAnnotations(MARKERS.ev, "rgba(198,40,40,.75)", "ev") };
+  // domyślnie tylko najsilniejsze zdarzenia (|z| >= 10); pozostałe po zaznaczeniu checkboxa
+  const evShown = el("c-ev").checked ? MARKERS.ev : MARKERS.ev.filter((e) => e.max_z >= 10);
+  ann = { ...ann, ...markerAnnotations(evShown, "rgba(198,40,40,.75)", "ev") };
 
   const metricLabel = el("c-metric").selectedOptions[0].text;
   charts.coh = new Chart(el("c-chart"), {
